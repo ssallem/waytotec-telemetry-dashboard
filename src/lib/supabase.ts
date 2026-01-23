@@ -1,8 +1,8 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-// TODO: 실제 Supabase 프로젝트 설정 후 환경 변수로 교체
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+// 환경 변수에서 줄바꿈 제거 (Vercel 환경변수 입력 시 발생할 수 있음)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim().replace(/\s+/g, '');
 
 // Supabase 클라이언트 (환경 변수가 설정된 경우에만 생성)
 let supabase: SupabaseClient | null = null;
