@@ -10,8 +10,6 @@ interface DeviceData {
   app_version: string;
   resolution: string;
   features_used: string[];
-  customer_name: string;
-  install_location: string;
 }
 
 export default function DevicesPage() {
@@ -104,10 +102,7 @@ export default function DevicesPage() {
             <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Customer
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Location
+                  Device ID
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   App Starts
@@ -130,14 +125,9 @@ export default function DevicesPage() {
               {devices.map((device, index) => (
                 <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                    {device.customer_name || (
-                      <span className="text-gray-400 font-mono text-xs" title={device.device_id}>
-                        {shortenDeviceId(device.device_id)}
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                    {device.install_location || '-'}
+                    <span className="font-mono text-xs" title={device.device_id}>
+                      {shortenDeviceId(device.device_id)}
+                    </span>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
