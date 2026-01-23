@@ -245,6 +245,76 @@ export async function getWeeklyTrend(weeks: number = 8) {
     .sort((a, b) => a.week.localeCompare(b.week));
 }
 
+// 디바이스별 통계 조회
+export async function getDeviceStats(days: number = 30) {
+  const client = getSupabase();
+  if (!client) return [];
+
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - days);
+
+  const { data, error } = await client
+    .from('telemetry_events')
+    .select('device_id, event_name, timestamp, os_version, app_version, screen_width, screen_height, properties')
+    .gte('timestamp', startDate.toISOString())
+    .order('timestamp', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching device stats:', error);
+    return [];
+  }
+
+  // 디바이스별 집계
+  const deviceStats: Record<string, {
+    device_id: string;
+    app_starts: number;
+    last_active: string;
+    os_version: string;
+    app_version: string;
+    resolution: string;
+    features_used: string[];
+  }> = {};
+
+  data?.forEach((event) => {
+    const deviceId = event.device_id;
+
+    if (!deviceStats[deviceId]) {
+      deviceStats[deviceId] = {
+        device_id: deviceId,
+        app_starts: 0,
+        last_active: event.timestamp,
+        os_version: event.os_version || 'Unknown',
+        app_version: event.app_version || 'Unknown',
+        resolution: event.screen_width && event.screen_height
+          ? `${event.screen_width}x${event.screen_height}`
+          : 'Unknown',
+        features_used: [],
+      };
+    }
+
+    // 앱 시작 횟수
+    if (event.event_name === 'app_start') {
+      deviceStats[deviceId].app_starts++;
+    }
+
+    // 마지막 활동 시간 업데이트
+    if (event.timestamp > deviceStats[deviceId].last_active) {
+      deviceStats[deviceId].last_active = event.timestamp;
+    }
+
+    // 사용한 기능 수집
+    if (event.event_name === 'feature_use' && event.properties?.feature_name) {
+      const featureName = event.properties.feature_name;
+      if (!deviceStats[deviceId].features_used.includes(featureName)) {
+        deviceStats[deviceId].features_used.push(featureName);
+      }
+    }
+  });
+
+  return Object.values(deviceStats)
+    .sort((a, b) => new Date(b.last_active).getTime() - new Date(a.last_active).getTime());
+}
+
 // 헬퍼 함수
 function simplifyOsVersion(os: string): string {
   if (os.includes('Windows NT 10.0')) {
