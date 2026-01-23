@@ -255,7 +255,7 @@ export async function getDeviceStats(days: number = 30) {
 
   const { data, error } = await client
     .from('telemetry_events')
-    .select('device_id, event_name, timestamp, os_version, app_version, screen_width, screen_height, properties')
+    .select('device_id, event_name, timestamp, os_version, app_version, screen_width, screen_height, properties, customer_name, install_location')
     .gte('timestamp', startDate.toISOString())
     .order('timestamp', { ascending: false });
 
@@ -273,6 +273,8 @@ export async function getDeviceStats(days: number = 30) {
     app_version: string;
     resolution: string;
     features_used: string[];
+    customer_name: string;
+    install_location: string;
   }> = {};
 
   data?.forEach((event) => {
@@ -289,7 +291,17 @@ export async function getDeviceStats(days: number = 30) {
           ? `${event.screen_width}x${event.screen_height}`
           : 'Unknown',
         features_used: [],
+        customer_name: event.customer_name || '',
+        install_location: event.install_location || '',
       };
+    }
+
+    // 고객사명/설치위치 업데이트 (최신 값으로)
+    if (event.customer_name) {
+      deviceStats[deviceId].customer_name = event.customer_name;
+    }
+    if (event.install_location) {
+      deviceStats[deviceId].install_location = event.install_location;
     }
 
     // 앱 시작 횟수

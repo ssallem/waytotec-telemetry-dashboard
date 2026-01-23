@@ -10,6 +10,8 @@ interface DeviceData {
   app_version: string;
   resolution: string;
   features_used: string[];
+  customer_name: string;
+  install_location: string;
 }
 
 export default function DevicesPage() {
@@ -102,7 +104,10 @@ export default function DevicesPage() {
             <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Device ID
+                  Customer
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Location
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   App Starts
@@ -114,10 +119,7 @@ export default function DevicesPage() {
                   OS
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  App Version
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Resolution
+                  Version
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Features Used
@@ -127,10 +129,15 @@ export default function DevicesPage() {
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {devices.map((device, index) => (
                 <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-4 py-4 whitespace-nowrap text-sm font-mono text-gray-900 dark:text-white">
-                    <span title={device.device_id}>
-                      {shortenDeviceId(device.device_id)}
-                    </span>
+                  <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                    {device.customer_name || (
+                      <span className="text-gray-400 font-mono text-xs" title={device.device_id}>
+                        {shortenDeviceId(device.device_id)}
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                    {device.install_location || '-'}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
@@ -141,13 +148,10 @@ export default function DevicesPage() {
                     {formatDate(device.last_active)}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                    {device.os_version.includes('Windows NT 10.0') ? 'Windows 10/11' : device.os_version}
+                    {device.os_version.includes('Windows NT 10.0') ? 'Win 10/11' : device.os_version}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                     {device.app_version}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                    {device.resolution}
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-500 dark:text-gray-300">
                     <div className="flex flex-wrap gap-1">
