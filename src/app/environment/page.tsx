@@ -6,9 +6,11 @@ import {
   Pie,
   Cell,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from 'recharts';
+import { Card, StatCard } from '@/components/Card';
+import { StatCardSkeleton, ChartSkeleton } from '@/components/Skeleton';
+import { DeviceIcon, SettingsIcon } from '@/components/Icons';
 
 interface OsData {
   os: string;
@@ -51,150 +53,282 @@ export default function EnvironmentPage() {
     fetchData();
   }, []);
 
+  const displayOs = osDistribution.length > 0 ? osDistribution : generateSampleOsData();
+  const displayResolutions = resolutions.length > 0 ? resolutions : generateSampleResolutionData();
+
+  const totalDevices = displayOs.reduce((sum, o) => sum + o.count, 0);
+  const topOs = displayOs.reduce((max, o) => o.count > max.count ? o : max, displayOs[0]);
+  const topResolution = displayResolutions.reduce((max, r) => r.count > max.count ? r : max, displayResolutions[0]);
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div className="space-y-8 animate-pulse">
+        <div>
+          <div className="h-10 w-48 bg-gray-200 dark:bg-gray-700 rounded-lg mb-2" />
+          <div className="h-5 w-72 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+          <StatCardSkeleton />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <ChartSkeleton />
+          <ChartSkeleton />
+        </div>
       </div>
     );
   }
 
-  const displayOs = osDistribution.length > 0 ? osDistribution : generateSampleOsData();
-  const displayResolutions = resolutions.length > 0 ? resolutions : generateSampleResolutionData();
+  const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    if (percent < 0.05) return null;
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="white"
+        textAnchor="middle"
+        dominantBaseline="central"
+        className="font-semibold text-sm"
+      >
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    );
+  };
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-        Environment
-      </h1>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* OS Distribution */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            OS Distribution
-          </h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={displayOs}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                outerRadius={100}
-                fill="#8884d8"
-                dataKey="count"
-                nameKey="os"
-              >
-                {displayOs.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-
-          {/* OS Table */}
-          <div className="mt-4 overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
-                    OS
-                  </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
-                    Devices
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {displayOs.map((os, index) => (
-                  <tr key={index}>
-                    <td className="px-4 py-2 text-sm text-gray-900 dark:text-white flex items-center">
-                      <span
-                        className="w-3 h-3 rounded-full mr-2"
-                        style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                      ></span>
-                      {os.os}
-                    </td>
-                    <td className="px-4 py-2 text-sm text-gray-500 dark:text-gray-300">
-                      {os.count}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Screen Resolution Distribution */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Screen Resolutions
-          </h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={displayResolutions}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
-                outerRadius={100}
-                fill="#8884d8"
-                dataKey="count"
-                nameKey="resolution"
-              >
-                {displayResolutions.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-
-          {/* Resolution Table */}
-          <div className="mt-4 overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
-                    Resolution
-                  </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">
-                    Devices
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {displayResolutions.map((res, index) => (
-                  <tr key={index}>
-                    <td className="px-4 py-2 text-sm text-gray-900 dark:text-white flex items-center">
-                      <span
-                        className="w-3 h-3 rounded-full mr-2"
-                        style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                      ></span>
-                      {res.resolution}
-                    </td>
-                    <td className="px-4 py-2 text-sm text-gray-500 dark:text-gray-300">
-                      {res.count}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+    <div className="space-y-8">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          Environment
+        </h1>
+        <p className="mt-2 text-gray-600 dark:text-gray-400">
+          사용자 환경 및 시스템 구성을 분석합니다
+        </p>
       </div>
 
-      {/* Culture/Language Distribution would go here if needed */}
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <StatCard
+          title="Total Devices"
+          value={totalDevices}
+          icon={<DeviceIcon className="w-6 h-6" />}
+          gradient="blue"
+        />
+        <StatCard
+          title="Most Common OS"
+          value={topOs?.os || '-'}
+          icon={<SettingsIcon className="w-6 h-6" />}
+          gradient="green"
+        />
+        <StatCard
+          title="Top Resolution"
+          value={topResolution?.resolution || '-'}
+          icon={<DeviceIcon className="w-6 h-6" />}
+          gradient="purple"
+        />
+      </div>
+
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* OS Distribution */}
+        <Card hover={false} className="p-6">
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              OS Distribution
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              운영체제별 사용 분포
+            </p>
+          </div>
+          <div className="flex flex-col lg:flex-row items-center gap-6">
+            <ResponsiveContainer width="100%" height={280}>
+              <PieChart>
+                <Pie
+                  data={displayOs}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={renderCustomLabel}
+                  outerRadius={110}
+                  innerRadius={60}
+                  fill="#8884d8"
+                  dataKey="count"
+                  nameKey="os"
+                  strokeWidth={3}
+                  stroke="rgba(255,255,255,0.5)"
+                >
+                  {displayOs.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    borderRadius: '12px',
+                    border: 'none',
+                    boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Legend */}
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {displayOs.map((os, index) => {
+              const percentage = ((os.count / totalDevices) * 100).toFixed(1);
+              return (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="w-4 h-4 rounded-lg"
+                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                    />
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                      {os.os}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {os.count}
+                    </span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">
+                      ({percentage}%)
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+
+        {/* Screen Resolution Distribution */}
+        <Card hover={false} className="p-6">
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Screen Resolutions
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              화면 해상도별 분포
+            </p>
+          </div>
+          <div className="flex flex-col lg:flex-row items-center gap-6">
+            <ResponsiveContainer width="100%" height={280}>
+              <PieChart>
+                <Pie
+                  data={displayResolutions}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={renderCustomLabel}
+                  outerRadius={110}
+                  innerRadius={60}
+                  fill="#8884d8"
+                  dataKey="count"
+                  nameKey="resolution"
+                  strokeWidth={3}
+                  stroke="rgba(255,255,255,0.5)"
+                >
+                  {displayResolutions.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[(index + 3) % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    borderRadius: '12px',
+                    border: 'none',
+                    boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Legend */}
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {displayResolutions.map((res, index) => {
+              const percentage = ((res.count / displayResolutions.reduce((s, r) => s + r.count, 0)) * 100).toFixed(1);
+              return (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="w-4 h-4 rounded-lg"
+                      style={{ backgroundColor: COLORS[(index + 3) % COLORS.length] }}
+                    />
+                    <span className="text-sm font-medium text-gray-900 dark:text-white font-mono">
+                      {res.resolution}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {res.count}
+                    </span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">
+                      ({percentage}%)
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      </div>
+
+      {/* Resolution Insights */}
+      <Card hover={false} className="p-6">
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            Resolution Insights
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            화면 해상도 분석 결과
+          </p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { label: 'Full HD (1920x1080)', ratio: '45%', category: 'Most Popular' },
+            { label: 'QHD (2560x1440)', ratio: '25%', category: 'Growing' },
+            { label: 'HD (1366x768)', ratio: '15%', category: 'Legacy' },
+            { label: '4K (3840x2160)', ratio: '10%', category: 'High-End' },
+          ].map((item, index) => (
+            <div
+              key={index}
+              className="p-4 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-800/50 border border-gray-200/50 dark:border-gray-700/50"
+            >
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                {item.category}
+              </p>
+              <p className="mt-2 text-lg font-semibold text-gray-900 dark:text-white">
+                {item.label}
+              </p>
+              <p className="mt-1 text-2xl font-bold text-blue-600 dark:text-blue-400">
+                {item.ratio}
+              </p>
+            </div>
+          ))}
+        </div>
+      </Card>
 
       {osDistribution.length === 0 && (
-        <div className="text-center text-gray-500 dark:text-gray-400 py-4">
-          Supabase 연결 후 실제 데이터가 표시됩니다. 현재는 샘플 데이터입니다.
+        <div className="text-center py-4">
+          <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300">
+            Supabase 연결 후 실제 데이터가 표시됩니다. 현재는 샘플 데이터입니다.
+          </span>
         </div>
       )}
     </div>
