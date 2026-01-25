@@ -4,7 +4,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim().replace(/\s+/g, '');
 
-// Supabase 클라이언트 (환경 변수가 설정된 경우에만 생성)
+// Supabase 클라이언트 (환경 변수가 설정된 경우에만 생성)1
 let supabase: SupabaseClient | null = null;
 
 function getSupabase(): SupabaseClient | null {
