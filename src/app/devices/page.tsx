@@ -129,7 +129,7 @@ export default function DevicesPage() {
           gradient="blue"
         />
         <StatCard
-          title="Total App Starts"
+          title="Total App Starts2"
           value={totalStarts}
           icon={<ChartIcon className="w-6 h-6" />}
           gradient="green"
