@@ -5,6 +5,7 @@ import { Card, StatCard } from '@/components/Card';
 import { StatCardSkeleton, TableSkeleton } from '@/components/Skeleton';
 import { DeviceIcon, ChartIcon, TrendIcon } from '@/components/Icons';
 import { DeviceDetailModal } from '@/components/DeviceDetailModal';
+import { HeroSection } from '@/components/HeroSection';
 
 interface DeviceData {
   device_id: string;
@@ -114,15 +115,15 @@ export default function DevicesPage() {
 
   return (
     <div className="space-y-8">
-      {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Devices
-        </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          디바이스별 사용 현황을 확인합니다
-        </p>
-      </div>
+      {/* Hero Section */}
+      <HeroSection
+        title="Devices"
+        subtitle="디바이스별 사용 현황을 확인합니다"
+        stats={[
+          { label: 'Total Devices', value: devices.length },
+          { label: 'Active Today', value: activeToday },
+        ]}
+      />
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

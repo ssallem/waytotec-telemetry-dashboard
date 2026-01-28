@@ -11,6 +11,7 @@ import {
 import { Card, StatCard } from '@/components/Card';
 import { StatCardSkeleton, ChartSkeleton } from '@/components/Skeleton';
 import { DeviceIcon, SettingsIcon } from '@/components/Icons';
+import { HeroSection } from '@/components/HeroSection';
 
 interface OsData {
   os: string;
@@ -104,15 +105,15 @@ export default function EnvironmentPage() {
 
   return (
     <div className="space-y-8">
-      {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Environment
-        </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          사용자 환경 및 시스템 구성을 분석합니다
-        </p>
-      </div>
+      {/* Hero Section */}
+      <HeroSection
+        title="Environment"
+        subtitle="사용자 환경 및 시스템 구성을 분석합니다"
+        stats={[
+          { label: 'Total Devices', value: totalDevices },
+          { label: 'OS Types', value: displayOs.length },
+        ]}
+      />
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

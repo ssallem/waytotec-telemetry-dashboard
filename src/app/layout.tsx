@@ -2,13 +2,16 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navigation } from "@/components/Navigation";
-import { ParticleBackground } from "@/components/ParticleBackground";
+import { MeshGradient } from "@/components/MeshGradient";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "Waytotec Telemetry Dashboard",
   description: "Analytics dashboard for Waytotec Control System",
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
@@ -17,9 +20,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning className={inter.variable}>
       <body className={`${inter.className} antialiased`}>
-        <ParticleBackground particleCount={40} connectionDistance={100} />
+        <MeshGradient />
         <div className="min-h-screen relative z-10">
           <Navigation />
 
@@ -29,8 +32,13 @@ export default function RootLayout({
           </main>
 
           {/* Footer */}
-          <footer className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">
-            <p>Waytotec Control System Telemetry</p>
+          <footer className="py-8 text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur-sm">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                Waytotec Control System Telemetry
+              </span>
+            </div>
           </footer>
         </div>
       </body>

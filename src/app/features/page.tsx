@@ -14,6 +14,7 @@ import {
 import { Card, StatCard } from '@/components/Card';
 import { StatCardSkeleton, ChartSkeleton, TableSkeleton } from '@/components/Skeleton';
 import { FeatureIcon, ChartIcon, TrendIcon } from '@/components/Icons';
+import { HeroSection } from '@/components/HeroSection';
 
 interface FeatureData {
   feature: string;
@@ -86,15 +87,15 @@ export default function FeaturesPage() {
 
   return (
     <div className="space-y-8">
-      {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Feature Usage
-        </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          기능별 사용 빈도와 페이지 뷰를 분석합니다
-        </p>
-      </div>
+      {/* Hero Section */}
+      <HeroSection
+        title="Feature Usage"
+        subtitle="기능별 사용 빈도와 페이지 뷰를 분석합니다"
+        stats={[
+          { label: 'Feature Usage', value: totalFeatureUsage },
+          { label: 'Page Views', value: totalPageViews },
+        ]}
+      />
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

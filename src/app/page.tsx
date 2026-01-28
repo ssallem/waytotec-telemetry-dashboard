@@ -2,20 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import {
-  LineChart,
-  Line,
   AreaChart,
   Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from 'recharts';
 import { Card, StatCard } from '@/components/Card';
 import { StatCardSkeleton, ChartSkeleton } from '@/components/Skeleton';
 import { ChartIcon, UsersIcon, TrendIcon } from '@/components/Icons';
+import { HeroSection } from '@/components/HeroSection';
 
 interface DailyData {
   date: string;
@@ -84,15 +82,16 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-8">
-      {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Dashboard
-        </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          Waytotec Control System 사용 현황을 한눈에 확인하세요
-        </p>
-      </div>
+      {/* Hero Section */}
+      <HeroSection
+        title="Dashboard"
+        subtitle="Waytotec Control System 사용 현황을 한눈에 확인하세요"
+        stats={[
+          { label: 'Total Sessions', value: totalSessions },
+          { label: 'Active Users', value: totalUsers },
+          { label: 'Avg/Day', value: avgSessionsPerDay },
+        ]}
+      />
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

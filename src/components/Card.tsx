@@ -7,21 +7,35 @@ interface CardProps {
   children: ReactNode;
   className?: string;
   hover?: boolean;
+  glow?: 'blue' | 'purple' | 'green' | 'none';
 }
 
-export function Card({ children, className = '', hover = true }: CardProps) {
+export function Card({ children, className = '', hover = true, glow = 'none' }: CardProps) {
+  const glowClasses = {
+    blue: 'hover:shadow-blue-500/20 hover:border-blue-400/50',
+    purple: 'hover:shadow-purple-500/20 hover:border-purple-400/50',
+    green: 'hover:shadow-green-500/20 hover:border-green-400/50',
+    none: 'hover:border-blue-200 dark:hover:border-blue-700',
+  };
+
   return (
     <div
       className={`
         relative overflow-hidden
-        bg-white/80 dark:bg-gray-800/80
+        bg-white/70 dark:bg-gray-800/70
         backdrop-blur-xl
         border border-gray-200/50 dark:border-gray-700/50
         rounded-2xl shadow-lg
-        ${hover ? 'transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:border-blue-200 dark:hover:border-blue-700' : ''}
+        ${hover ? `transition-all duration-500 hover:shadow-2xl hover:scale-[1.02] ${glowClasses[glow]}` : ''}
         ${className}
       `}
     >
+      {/* Shine effect overlay */}
+      {hover && (
+        <div className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+          <div className="absolute inset-0 animate-shine" />
+        </div>
+      )}
       {children}
     </div>
   );
