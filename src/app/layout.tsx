@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navigation } from "@/components/Navigation";
+import { ParticleBackground } from "@/components/ParticleBackground";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +19,8 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <body className={`${inter.className} antialiased`}>
-        <div className="min-h-screen">
+        <ParticleBackground particleCount={40} connectionDistance={100} />
+        <div className="min-h-screen relative z-10">
           <Navigation />
 
           {/* Main content */}

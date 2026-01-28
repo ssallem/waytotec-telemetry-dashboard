@@ -31,6 +31,7 @@ export interface TelemetryEvent {
   screen_width: number | null;
   screen_height: number | null;
   culture: string | null;
+  machine_name: string | null;
   created_at: string;
 }
 
@@ -255,7 +256,7 @@ export async function getDeviceStats(days: number = 30) {
 
   const { data, error } = await client
     .from('telemetry_events')
-    .select('device_id, event_name, timestamp, os_version, app_version, screen_width, screen_height, properties')
+    .select('device_id, event_name, timestamp, os_version, app_version, screen_width, screen_height, properties, machine_name')
     .gte('timestamp', startDate.toISOString())
     .order('timestamp', { ascending: false });
 
@@ -267,6 +268,7 @@ export async function getDeviceStats(days: number = 30) {
   // 디바이스별 집계
   const deviceStats: Record<string, {
     device_id: string;
+    machine_name: string | null;
     app_starts: number;
     last_active: string;
     os_version: string;
@@ -281,6 +283,7 @@ export async function getDeviceStats(days: number = 30) {
     if (!deviceStats[deviceId]) {
       deviceStats[deviceId] = {
         device_id: deviceId,
+        machine_name: event.machine_name || null,
         app_starts: 0,
         last_active: event.timestamp,
         os_version: event.os_version || 'Unknown',
@@ -290,6 +293,11 @@ export async function getDeviceStats(days: number = 30) {
           : 'Unknown',
         features_used: [],
       };
+    }
+
+    // machine_name이 있으면 업데이트 (최신 값으로)
+    if (event.machine_name && !deviceStats[deviceId].machine_name) {
+      deviceStats[deviceId].machine_name = event.machine_name;
     }
 
     // 앱 시작 횟수

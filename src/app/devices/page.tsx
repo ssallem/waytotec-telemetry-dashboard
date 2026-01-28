@@ -4,9 +4,11 @@ import { useEffect, useState } from 'react';
 import { Card, StatCard } from '@/components/Card';
 import { StatCardSkeleton, TableSkeleton } from '@/components/Skeleton';
 import { DeviceIcon, ChartIcon, TrendIcon } from '@/components/Icons';
+import { DeviceDetailModal } from '@/components/DeviceDetailModal';
 
 interface DeviceData {
   device_id: string;
+  machine_name: string | null;
   app_starts: number;
   last_active: string;
   os_version: string;
@@ -29,6 +31,7 @@ export default function DevicesPage() {
   const [devices, setDevices] = useState<DeviceData[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedDevice, setSelectedDevice] = useState<DeviceData | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -79,6 +82,7 @@ export default function DevicesPage() {
 
   const filteredDevices = devices.filter(device =>
     device.device_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (device.machine_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
     device.os_version.toLowerCase().includes(searchTerm.toLowerCase()) ||
     device.app_version.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -129,7 +133,7 @@ export default function DevicesPage() {
           gradient="blue"
         />
         <StatCard
-          title="Total App Starts2"
+          title="Total App Starts"
           value={totalStarts}
           icon={<ChartIcon className="w-6 h-6" />}
           gradient="green"
@@ -185,7 +189,7 @@ export default function DevicesPage() {
             <thead>
               <tr className="bg-gray-50 dark:bg-gray-800/50">
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Device ID
+                  Computer Name
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   App Starts
@@ -209,19 +213,26 @@ export default function DevicesPage() {
                 filteredDevices.map((device, index) => (
                   <tr
                     key={index}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors duration-200"
+                    onClick={() => setSelectedDevice(device)}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-all duration-200 cursor-pointer animate-tableRowEnter opacity-0"
+                    style={{ animationDelay: `${index * 0.03}s`, animationFillMode: 'forwards' }}
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
                           <DeviceIcon className="w-5 h-5 text-white" />
                         </div>
-                        <span
-                          className="font-mono text-sm text-gray-900 dark:text-white cursor-help"
-                          title={device.device_id}
-                        >
-                          {shortenDeviceId(device.device_id)}
-                        </span>
+                        <div className="flex flex-col">
+                          <span className="font-medium text-sm text-gray-900 dark:text-white">
+                            {device.machine_name || 'Unknown'}
+                          </span>
+                          <span
+                            className="font-mono text-xs text-gray-500 dark:text-gray-400"
+                            title={device.device_id}
+                          >
+                            {shortenDeviceId(device.device_id)}
+                          </span>
+                        </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -319,6 +330,12 @@ export default function DevicesPage() {
           </div>
         )}
       </Card>
+
+      {/* Device Detail Modal */}
+      <DeviceDetailModal
+        device={selectedDevice}
+        onClose={() => setSelectedDevice(null)}
+      />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
+import { AnimatedCounter } from './AnimatedCounter';
 
 interface CardProps {
   children: ReactNode;
@@ -43,17 +44,26 @@ const gradientColors = {
 
 export function StatCard({ title, value, change, icon, gradient = 'blue' }: StatCardProps) {
   const isPositive = change?.startsWith('+');
+  const numericValue = typeof value === 'number' ? value : parseFloat(value.toString());
+  const isNumeric = !isNaN(numericValue);
 
   return (
-    <Card>
+    <Card className="hover-spring">
       <div className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                {typeof value === 'number' ? value.toLocaleString() : value}
-              </span>
+              {isNumeric ? (
+                <AnimatedCounter
+                  value={value}
+                  className="text-3xl font-bold text-gray-900 dark:text-white"
+                />
+              ) : (
+                <span className="text-3xl font-bold text-gray-900 dark:text-white">
+                  {value}
+                </span>
+              )}
               {change && (
                 <span
                   className={`
@@ -69,13 +79,13 @@ export function StatCard({ title, value, change, icon, gradient = 'blue' }: Stat
             </div>
           </div>
           {icon && (
-            <div className={`p-3 rounded-xl bg-gradient-to-br ${gradientColors[gradient]} text-white shadow-lg`}>
+            <div className={`p-3 rounded-xl bg-gradient-to-br ${gradientColors[gradient]} text-white shadow-lg animate-iconFloat`}>
               {icon}
             </div>
           )}
         </div>
-        {/* Decorative gradient line */}
-        <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${gradientColors[gradient]} opacity-80`} />
+        {/* Decorative gradient line with pulse */}
+        <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${gradientColors[gradient]} animate-gradientPulse`} />
       </div>
     </Card>
   );
