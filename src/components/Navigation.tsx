@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SunIcon, MoonIcon, MenuIcon, CloseIcon, HomeIcon, FeatureIcon, SettingsIcon, DeviceIcon } from './Icons';
+import { SunIcon, MoonIcon, MenuIcon, CloseIcon, HomeIcon, FeatureIcon, SettingsIcon, DeviceIcon, ChartIcon } from './Icons';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: HomeIcon },
+  { href: '/analytics', label: 'Analytics', icon: ChartIcon },
   { href: '/features', label: 'Features', icon: FeatureIcon },
   { href: '/environment', label: 'Environment', icon: SettingsIcon },
   { href: '/devices', label: 'Devices', icon: DeviceIcon },
