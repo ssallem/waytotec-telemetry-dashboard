@@ -10,6 +10,7 @@ import { HeroSection } from '@/components/HeroSection';
 interface DeviceData {
   device_id: string;
   machine_name: string | null;
+  ip_address: string | null;
   app_starts: number;
   last_active: string;
   os_version: string;
@@ -84,6 +85,7 @@ export default function DevicesPage() {
   const filteredDevices = devices.filter(device =>
     device.device_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (device.machine_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (device.ip_address?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
     device.os_version.toLowerCase().includes(searchTerm.toLowerCase()) ||
     device.app_version.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -193,6 +195,9 @@ export default function DevicesPage() {
                   Computer Name
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  IP Address
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   App Starts
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -235,6 +240,11 @@ export default function DevicesPage() {
                           </span>
                         </div>
                       </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-mono text-sm text-gray-600 dark:text-gray-400">
+                        {device.ip_address || '-'}
+                      </span>
                     </td>
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center px-3 py-1.5 rounded-xl text-sm font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">
@@ -290,7 +300,7 @@ export default function DevicesPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-6 py-16 text-center">
+                  <td colSpan={7} className="px-6 py-16 text-center">
                     <div className="flex flex-col items-center gap-3">
                       <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                         <DeviceIcon className="w-8 h-8 text-gray-400" />

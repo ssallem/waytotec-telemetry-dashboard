@@ -6,6 +6,7 @@ import { DeviceIcon } from '@/components/Icons';
 interface DeviceData {
   device_id: string;
   machine_name: string | null;
+  ip_address: string | null;
   app_starts: number;
   last_active: string;
   os_version: string;
@@ -110,6 +111,11 @@ export function DeviceDetailModal({ device, onClose }: DeviceDetailModalProps) {
             <p className="text-sm text-gray-500 dark:text-gray-400 font-mono mt-1">
               {device.device_id}
             </p>
+            {device.ip_address && (
+              <p className="text-sm text-blue-600 dark:text-blue-400 font-mono mt-1">
+                IP: {device.ip_address}
+              </p>
+            )}
           </div>
 
           {/* Stats Grid */}
