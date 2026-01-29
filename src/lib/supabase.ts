@@ -37,11 +37,13 @@ export interface TelemetryEvent {
 }
 
 // 일별 앱 시작 횟수 조회
-export async function getDailyAppStarts(days: number = 30) {
+export async function getDailyAppStarts(days: number = 30, offset: number = 0) {
   const client = getSupabase();
   if (!client) return [];
 
-  const startDate = new Date();
+  const endDate = new Date();
+  endDate.setDate(endDate.getDate() - offset);
+  const startDate = new Date(endDate);
   startDate.setDate(startDate.getDate() - days);
 
   const { data, error } = await client
@@ -49,6 +51,7 @@ export async function getDailyAppStarts(days: number = 30) {
     .select('timestamp')
     .eq('event_name', 'app_start')
     .gte('timestamp', startDate.toISOString())
+    .lte('timestamp', endDate.toISOString())
     .order('timestamp', { ascending: true });
 
   if (error) {

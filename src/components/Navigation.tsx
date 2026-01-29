@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { SunIcon, MoonIcon, MenuIcon, CloseIcon, HomeIcon, FeatureIcon, SettingsIcon, DeviceIcon, ChartIcon } from './Icons';
+import { SunIcon, MoonIcon, MenuIcon, CloseIcon, HomeIcon, FeatureIcon, SettingsIcon, DeviceIcon, ChartIcon, GearIcon } from './Icons';
+import { FullscreenButton } from './FullscreenButton';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: HomeIcon },
@@ -11,6 +12,7 @@ const navItems = [
   { href: '/features', label: 'Features', icon: FeatureIcon },
   { href: '/environment', label: 'Environment', icon: SettingsIcon },
   { href: '/devices', label: 'Devices', icon: DeviceIcon },
+  { href: '/settings', label: 'Settings', icon: GearIcon },
 ];
 
 export function Navigation() {
@@ -88,6 +90,11 @@ export function Navigation() {
 
           {/* Right side: Theme toggle + Mobile menu */}
           <div className="flex items-center gap-2">
+            {/* Fullscreen Button */}
+            {mounted && (
+              <FullscreenButton />
+            )}
+
             {/* Theme Toggle */}
             {mounted && (
               <button

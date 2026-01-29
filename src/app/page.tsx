@@ -14,6 +14,7 @@ import { Card, StatCard } from '@/components/Card';
 import { StatCardSkeleton, ChartSkeleton } from '@/components/Skeleton';
 import { ChartIcon, UsersIcon, TrendIcon } from '@/components/Icons';
 import { HeroSection } from '@/components/HeroSection';
+import { DateRangeSelector } from '@/components/DateRangeSelector';
 
 interface DailyData {
   date: string;
@@ -66,14 +67,28 @@ const DailyTooltip = ({ active, payload, label }: any) => {
 export default function Dashboard() {
   const [dailyStarts, setDailyStarts] = useState<DailyData[]>([]);
   const [weeklyTrend, setWeeklyTrend] = useState<WeeklyData[]>([]);
+  const [prevDailyStarts, setPrevDailyStarts] = useState<DailyData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dateRange, setDateRange] = useState(30);
+  const [comparisonEnabled, setComparisonEnabled] = useState(false);
+
+  // 설정에서 기본값 불러오기
+  useEffect(() => {
+    const stored = localStorage.getItem('dashboardSettings');
+    if (stored) {
+      const settings = JSON.parse(stored);
+      if (settings.defaultDateRange) setDateRange(settings.defaultDateRange);
+      if (settings.showComparisonByDefault) setComparisonEnabled(settings.showComparisonByDefault);
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
+      setLoading(true);
       try {
         const [dailyRes, weeklyRes] = await Promise.all([
-          fetch('/api/daily-starts'),
-          fetch('/api/weekly-trend'),
+          fetch(`/api/daily-starts?days=${dateRange}`),
+          fetch(`/api/weekly-trend?days=${dateRange}`),
         ]);
 
         if (dailyRes.ok) {
@@ -81,6 +96,14 @@ export default function Dashboard() {
         }
         if (weeklyRes.ok) {
           setWeeklyTrend(await weeklyRes.json());
+        }
+
+        // 비교 데이터 가져오기 (이전 기간)
+        if (comparisonEnabled) {
+          const prevDailyRes = await fetch(`/api/daily-starts?days=${dateRange}&offset=${dateRange}`);
+          if (prevDailyRes.ok) {
+            setPrevDailyStarts(await prevDailyRes.json());
+          }
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -90,7 +113,7 @@ export default function Dashboard() {
     }
 
     fetchData();
-  }, []);
+  }, [dateRange, comparisonEnabled]);
 
   const displayDailyData = dailyStarts.length > 0 ? dailyStarts : generateSampleDailyData();
   const displayWeeklyData = weeklyTrend.length > 0 ? weeklyTrend : generateSampleWeeklyData();
@@ -98,6 +121,15 @@ export default function Dashboard() {
   const totalSessions = displayDailyData.reduce((sum, d) => sum + d.count, 0);
   const totalUsers = displayWeeklyData.reduce((sum, d) => sum + d.users, 0);
   const avgSessionsPerDay = Math.round(totalSessions / Math.max(displayDailyData.length, 1));
+
+  // 이전 기간 데이터 계산 (비교용)
+  const prevTotalSessions = prevDailyStarts.reduce((sum, d) => sum + d.count, 0);
+  const sessionChange = prevTotalSessions > 0
+    ? Math.round(((totalSessions - prevTotalSessions) / prevTotalSessions) * 100)
+    : 0;
+  const sessionChangeText = comparisonEnabled && prevTotalSessions > 0
+    ? `${sessionChange >= 0 ? '+' : ''}${sessionChange}%`
+    : undefined;
 
   if (loading) {
     return (
@@ -130,19 +162,27 @@ export default function Dashboard() {
         ]}
       />
 
+      {/* Date Range Selector */}
+      <DateRangeSelector
+        value={dateRange}
+        onChange={setDateRange}
+        showComparison={true}
+        comparisonEnabled={comparisonEnabled}
+        onComparisonChange={setComparisonEnabled}
+      />
+
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard
-          title="Total Sessions (30d)"
+          title={`Total Sessions (${dateRange}d)`}
           value={totalSessions}
-          change="+12%"
+          change={sessionChangeText}
           icon={<ChartIcon className="w-6 h-6" />}
           gradient="blue"
         />
         <StatCard
-          title="Unique Users (30d)"
+          title={`Unique Users (${dateRange}d)`}
           value={totalUsers}
-          change="+5%"
           icon={<UsersIcon className="w-6 h-6" />}
           gradient="green"
         />
