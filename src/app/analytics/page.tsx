@@ -4,6 +4,13 @@ import { useEffect, useState } from 'react';
 import { Card } from '@/components/Card';
 import { ChartSkeleton } from '@/components/Skeleton';
 import { HeroSection } from '@/components/HeroSection';
+import dynamic from 'next/dynamic';
+
+// 지도 컴포넌트 동적 import (SSR 비활성화)
+const KoreaMap = dynamic(() => import('@/components/KoreaMap').then(mod => mod.KoreaMap), {
+  ssr: false,
+  loading: () => <div className="h-[400px] bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />,
+});
 import {
   BarChart,
   Bar,
@@ -219,63 +226,17 @@ export default function AnalyticsPage() {
           )}
         </Card>
 
-        {/* Culture/Language Distribution */}
+        {/* 지역별 사용자 분포 지도 */}
         <Card hover={false} className="p-6">
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Language Distribution
+              Regional Distribution
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              사용자 언어/지역 분포
+              IP 기반 지역별 사용자 분포
             </p>
           </div>
-          {cultureData.length > 0 ? (
-            <>
-              <ResponsiveContainer width="100%" height={200}>
-                <PieChart>
-                  <Pie
-                    data={cultureData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={80}
-                    dataKey="count"
-                    nameKey="displayName"
-                  >
-                    {cultureData.map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                      borderRadius: '12px',
-                      border: 'none',
-                    }}
-                    labelStyle={{ color: '#1f2937' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="mt-4 space-y-2">
-                {cultureData.slice(0, 5).map((item, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }}
-                      />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">{item.displayName}</span>
-                    </div>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">{item.count}</span>
-                  </div>
-                ))}
-              </div>
-            </>
-          ) : (
-            <div className="h-64 flex items-center justify-center text-gray-400">
-              No language data available
-            </div>
-          )}
+          <KoreaMap />
         </Card>
       </div>
 

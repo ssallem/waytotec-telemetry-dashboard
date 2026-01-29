@@ -7,7 +7,7 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim().replace
 // Supabase 클라이언트 (환경 변수가 설정된 경우에만 생성)1
 let supabase: SupabaseClient | null = null;
 
-function getSupabase(): SupabaseClient | null {
+export function getSupabase(): SupabaseClient | null {
   if (supabase) return supabase;
 
   if (supabaseUrl && supabaseServiceKey &&
