@@ -177,6 +177,7 @@ export default function EnvironmentPage() {
                     border: 'none',
                     boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
                   }}
+                  labelStyle={{ color: '#1f2937' }}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -252,6 +253,7 @@ export default function EnvironmentPage() {
                     border: 'none',
                     boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
                   }}
+                  labelStyle={{ color: '#1f2937' }}
                 />
               </PieChart>
             </ResponsiveContainer>

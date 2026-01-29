@@ -150,6 +150,7 @@ export default function FeaturesPage() {
                   border: 'none',
                   boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
                 }}
+                labelStyle={{ color: '#1f2937' }}
               />
               <Bar dataKey="count" name="Usage" radius={[0, 8, 8, 0]}>
                 {displayFeatures.map((_, index) => (
@@ -189,6 +190,7 @@ export default function FeaturesPage() {
                   border: 'none',
                   boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
                 }}
+                labelStyle={{ color: '#1f2937' }}
               />
               <Bar dataKey="count" name="Views" radius={[0, 8, 8, 0]}>
                 {displayPages.map((_, index) => (

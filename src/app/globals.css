@@ -116,9 +116,19 @@ body {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
 }
 
+.recharts-default-tooltip .recharts-tooltip-label,
+.recharts-default-tooltip .recharts-tooltip-item {
+  color: #1f2937 !important;
+}
+
 .dark .recharts-default-tooltip {
   background: rgba(30, 41, 59, 0.95) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.dark .recharts-default-tooltip .recharts-tooltip-label,
+.dark .recharts-default-tooltip .recharts-tooltip-item {
+  color: #f3f4f6 !important;
 }
 
 .recharts-cartesian-grid-horizontal line,

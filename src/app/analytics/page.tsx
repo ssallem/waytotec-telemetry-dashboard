@@ -186,6 +186,7 @@ export default function AnalyticsPage() {
                     border: 'none',
                     boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
                   }}
+                  labelStyle={{ color: '#1f2937' }}
                   formatter={(value: number) => [`${value} users`, 'Users']}
                   labelFormatter={(v) => `Version ${v}`}
                 />
@@ -251,6 +252,7 @@ export default function AnalyticsPage() {
                       borderRadius: '12px',
                       border: 'none',
                     }}
+                    labelStyle={{ color: '#1f2937' }}
                   />
                 </PieChart>
               </ResponsiveContainer>

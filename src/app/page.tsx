@@ -26,6 +26,43 @@ interface WeeklyData {
   sessions: number;
 }
 
+// 커스텀 Tooltip 컴포넌트
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-gray-200 dark:border-gray-700">
+        <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+          {label ? `Week of ${new Date(label).toLocaleDateString('ko-KR')}` : ''}
+        </p>
+        {payload.map((entry: any, index: number) => (
+          <p key={index} className="text-sm" style={{ color: entry.color }}>
+            {entry.name} : {entry.value}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
+const DailyTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-gray-200 dark:border-gray-700">
+        <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+          {label ? new Date(label).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : ''}
+        </p>
+        {payload.map((entry: any, index: number) => (
+          <p key={index} className="text-sm" style={{ color: entry.color }}>
+            {entry.name} : {entry.value}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function Dashboard() {
   const [dailyStarts, setDailyStarts] = useState<DailyData[]>([]);
   const [weeklyTrend, setWeeklyTrend] = useState<WeeklyData[]>([]);
@@ -157,15 +194,7 @@ export default function Dashboard() {
               tickLine={false}
               axisLine={false}
             />
-            <Tooltip
-              labelFormatter={(value) => new Date(value).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
-              contentStyle={{
-                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                borderRadius: '12px',
-                border: 'none',
-                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
-              }}
-            />
+            <Tooltip content={<DailyTooltip />} />
             <Area
               type="monotone"
               dataKey="count"
@@ -221,6 +250,7 @@ export default function Dashboard() {
               tick={{ fill: '#94a3b8', fontSize: 12 }}
               tickLine={false}
               axisLine={false}
+              interval={0}
             />
             <YAxis
               yAxisId="left"
@@ -235,15 +265,7 @@ export default function Dashboard() {
               tickLine={false}
               axisLine={false}
             />
-            <Tooltip
-              labelFormatter={(value) => `Week of ${new Date(value).toLocaleDateString('ko-KR')}`}
-              contentStyle={{
-                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                borderRadius: '12px',
-                border: 'none',
-                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
-              }}
-            />
+            <Tooltip content={<CustomTooltip />} />
             <Area
               yAxisId="left"
               type="monotone"
